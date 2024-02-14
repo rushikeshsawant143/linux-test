@@ -1,0 +1,24 @@
+---
+- name: Create user tsystems2 and configure sudoers
+  hosts: all
+  become: yes
+  tasks:
+    - name: Create tsystems2 group
+      group:
+        name: tsystems2
+        state: present
+
+    - name: Create tsystems2 user
+      user:
+        name: tsystems2
+        group: tsystems2
+        password: "{{ 'FEC11tsin#$' | password_hash('sha512') }}"
+        shell: /bin/bash
+        createhome: yes
+
+    - name: Add tsystems2 to sudoers
+      lineinfile:
+        path: /etc/sudoers
+        line: 'tsystems2 ALL=(ALL) ALL'
+        validate: 'visudo -cf %s'
+        insertafter: EOF
